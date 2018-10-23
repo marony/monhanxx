@@ -1,0 +1,77 @@
+from django.db.models import Q, Prefetch
+from monhan.models import *
+
+class Logic:
+    def search_armor_sets(armors, now_set, results):
+        types = ['頭', '胴', '腕', '腰', '脚']
+        l = len(now_set)
+        if l < 5:
+            armors2 = [a for a in armors if a.type == types[l]]
+            for a in armors2:
+                now_set2 = now_set[:]
+                now_set2.append(a)
+                Logic.search_armor_sets(armors, now_set2, results)
+            return results
+        else:
+            results.append(now_set)
+            return results
+
+    def p_skill(armor_set, skills):
+        for skill in skills:
+            if skill != None:
+                point = 0
+                for armor in armor_set:
+                    for skill2 in armor.armorskillpoint_set.filter(Q(skill_system__skill__id=skill.id)).iterator():
+                        if skill2 != None:
+                            point = point + skill2.point
+                if point < skill.require_point + 2:
+                    return False
+        return True
+
+    def p_skill_point(armor_set, skill_systems):
+        for skill_system in skill_systems:
+            ss, p = skill_system
+            if ss != None:
+                point = 0
+                for armor in armor_set:
+                    for skill_point in armor.armorskillpoint_set.filter(Q(skill_system__id=ss.id)):
+                        print(skill_point)
+                        point = point + skill_point.point
+                print(point, ss.name)
+                if point < ss.skill_set.require_point:
+                    return False
+        return True
+
+    def p_others(armor_set, min_slot, defenses):
+        return True
+
+    def coodinate_armor_set(skills, skill_systems, min_slot, defenses):
+        cond = []
+        # skill1, 2, 3
+        # これらのスキルポイントを備えた防具を検索(ポイント数は少なくてもいい)
+        for i in range(len(skills)):
+            skill = skills[i]
+            if skill != None:
+                cond.append(Q(armorskillpoint__skill_system__skill__id=skill.id))
+        # skill_system1, skill_point1, 2, 3
+        # これらのスキルポイントを備えた防具を検索(ポイント数は少なくてもいい)
+        for i in range(len(skill_systems)):
+            skill_system, skill_point = skill_systems[i]
+            if skill_system != None:
+                cond.append(Q(armorskillpoint__skill_system__id=skill_system.id))
+            # TODO: 防具一式のポイントなのでこの検索は間違っている
+            if skill_point != None:
+                cond.append(Q(armorskillpoint__point__gte=skill_point))
+        print(cond)
+        armors = Armor.objects.filter(*cond)
+        # 頭・胴・腕・腰・脚の全組み合わせについて
+        armor_sets = Logic.search_armor_sets(armors, [], [])
+        # skill1, 2, 3が発動する組み合わせ以外除外
+        armor_sets = [armor_set for armor_set in armor_sets if Logic.p_skill(armor_set, skills)]
+        # skill_system1, skill_point1, 2, 3を満たすもの以外除外
+        armor_sets = [armor_set for armor_set in armor_sets if Logic.p_skill_point(armor_set, skill_systems)]
+        # 合計でmin_slot, initial_defense, max_defenseを満すもの以外除外
+        armor_sets = [armor_set for armor_set in armor_sets if Logic.p_others(armor_set, min_slot, defenses)]
+
+        return armor_sets
+

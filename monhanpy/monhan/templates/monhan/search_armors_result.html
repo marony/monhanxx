@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load filter %}
+
+{% block title %}防具検索{% endblock title %}
+
+{% block extrahead %}
+<style>
+table {
+  margin-top: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      <h2 class="page-header">防具検索</h3>
+      <form action="{% url 'monhan:search_armors' %}" method="POST">{% csrf_token %}
+        {% bootstrap_form form %}
+        <input class="btn btn-default btn-sm" type="submit" value="検索" />
+      </form>
+    </div> <!-- /.col-sm-12 -->
+  </div> <!-- /.row -->
+  <div class="row">
+    <div class="col-sm-12">
+      検索結果{{ armors_length }}件。
+      {% if armors_length > 1000 %}
+        <br />最初の1000件のみ表示します。
+      {% endif %}
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>通番</th>
+              <th>ID</th>
+              <th>種別</th>
+              <th>部位</th>
+              <th>防具名</th>
+              <th>初期防御力</th>
+              <th>最大防御力</th>
+              <th>スロット</th>
+              <th>スキル</th>
+              <th>スキルポイント</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for armor in armors %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ armor.id }}</td>
+              <td>{{ armor.han_type|han_type_name }}</td>
+              <td>{{ armor.type }}</td>
+              <td>{{ armor.name }}</td>
+              <td>{{ armor.initial_defense }}</td>
+              <td>{{ armor.max_defense }}</td>
+              <td>{{ armor.slot }}</td>
+              <td>
+                {% for skill_point in armor.armorskillpoint_set.all %}
+                  {% for skill in skill_point.skill_system.skill_set.all %}
+                    {{ skill.name }}<br />
+                  {% endfor %}
+                {% endfor %}
+              </td>
+              <td>
+                {% for skill_point in armor.armorskillpoint_set.all %}
+                  {{ skill_point.skill_system.name }}+{{ skill_point.point }}<br />
+                {% endfor %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div> <!-- /.table-responsive -->
+    </div> <!-- ./col-sm-12 -->
+  </div> <!-- /.row -->
+{% endblock content %}
+

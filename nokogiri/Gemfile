@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+# gem "rails"
+# gem install bundler
+# bundle install                                                                                                 
+gem 'sqlite3'
+
+## rbenv exec gem install bundler
+## rbenv rehash
+## rbenv exec bundle init
+
+# sudo gem install bundler
+# bundler install

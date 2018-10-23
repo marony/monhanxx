@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load filter %}
+
+{% block title %}防具の一覧{% endblock title %}
+
+{% block extrahead %}
+<style>
+table {
+  margin-top: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      <h2 class="page-header">防具の一覧</h3>
+      {% for armor_s in armor_series %}
+        <h3>{{ armor_s.name }}</h3>
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>防具シリーズ名</th>
+                <th>初期防御力</th>
+                <th>最大防御力</th>
+                <th>スロット</th>
+                <th>発動スキル</th>
+                <th>合計スキルポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ armor_s.id }}</td>
+                <td>{{ armor_s.name }}</td>
+                <td>{{ armor_s.initial_defense }}</td>
+                <td>{{ armor_s.max_defense }}</td>
+                <td>{{ armor_s.slot }}</td>
+                <td>
+                  {% for skill in armor_s.skills.all %}
+                    {{ skill.name }}<br />
+                  {% endfor %}
+                </td>
+                <td>
+                  {% for skill_point in armor_s.armorseriesskillpoint_set.all %}
+                    {{ skill_point.skill_system.name }}+{{ skill_point.point }}<br />
+                  {% endfor %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- /.table-responsive -->
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>通番</th>
+                <th>ID</th>
+                <th>種別</th>
+                <th>部位</th>
+                <th>防具名</th>
+                <th>初期防御力</th>
+                <th>最大防御力</th>
+                <th>スロット</th>
+                <th>スキルポイント</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for armor in armor_s.armor_set.all %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ armor.id }}</td>
+                <td>{{ armor.han_type|han_type_name }}</td>
+                <td>{{ armor.type }}</td>
+                <td>{{ armor.name }}</td>
+                <td>{{ armor.initial_defense }}</td>
+                <td>{{ armor.max_defense }}</td>
+                <td>{{ armor.slot }}</td>
+                <td>
+                  {% for skill_point in armor.armorskillpoint_set.all %}
+                    {{ skill_point.skill_system.name }}+{{ skill_point.point }}<br />
+                  {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div> <!-- /.table-responsive -->
+      {% endfor %}
+    </div> <!-- /.col-sm-12 -->
+  </div> <!-- /.row -->
+{% endblock content %}
+

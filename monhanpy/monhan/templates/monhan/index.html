@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}モンハン攻略アプリ{% endblock title %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+  <h3 class="page-header">メニュー</h3>
+  <a href="{% url 'monhan:search_armors' %}" class="btn btn-default btn-sm">防具検索</a>
+{% endblock content %}
+

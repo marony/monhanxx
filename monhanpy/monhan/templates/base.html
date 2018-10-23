@@ -1,0 +1,45 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}防具{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-theme.min.css' %}" rel="stylesheet">
+    {% block extrahead %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#menu">
+            <span class="sr-only">test</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href={% url 'monhan:index' %}>HOME</a>
+        </div> <!-- /.navbar-header -->
+        <div id="menu" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href={% url 'monhan:armor_list' %}>防具一覧</a></li>
+            <li><a href={% url 'monhan:skill_list' %}>スキル一覧</a></li>
+            <li><a href={% url 'monhan:item_list' %}>アイテム一覧</a></li>
+            <li><a href={% url 'monhan:search_armors' %}>防具検索</a></li>
+            <li><a href={% url 'monhan:coodinate_armor_set' %}>最適防具検索(作成中)</a></li>
+            <li><a href="#">未完成</a></li>
+          </ul>
+        </div> <!-- /.collapse navbar-collapse -->
+      </div> <!-- /.container -->
+    </nav>
+    <div class="container">
+      {% block content %}
+        {{ content }}
+      {% endblock %}
+    </div> <!-- /.container -->
+  <script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  </body>
+</html>
+
